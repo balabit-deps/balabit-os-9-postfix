@@ -1,0 +1,13 @@
+Index: postfix/makedefs
+===================================================================
+--- postfix.orig/makedefs
++++ postfix/makedefs
+@@ -606,7 +606,7 @@ EOF
+ 		: ${SHLIB_ENV="LD_LIBRARY_PATH=`pwd`/lib"}
+ 		: ${PLUGIN_LD="${CC-gcc} -shared"}
+ 		;;
+-     GNU.0*|GNU/kFreeBSD.[567]*)
++     GNU.0*|GNU/kFreeBSD.*)
+ 		SYSTYPE=GNU0
+ 		case "$CCARGS" in
+ 		 *-DNO_DB*) ;;

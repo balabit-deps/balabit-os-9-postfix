@@ -1,0 +1,6 @@
+# Lintian doesn't know how to parse the damn files.
+postfix: missing-debconf-dependency-for-preinst
+postfix: spare-manual-page usr/share/man/man*
+postfix: unused-debconf-template postfix/bad_recipient_delimiter
+postfix: unused-debconf-template postfix/newaliases
+postfix: unused-debconf-template postfix/not_configured

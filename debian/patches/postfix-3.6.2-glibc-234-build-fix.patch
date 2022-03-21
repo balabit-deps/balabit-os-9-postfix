@@ -1,0 +1,23 @@
+Description: Closefrom is a new function in glibc 2.34.
+Author: Eray Aslan <eras@gentoo.org>
+Origin: Gentoo, https://gitweb.gentoo.org/repo/gentoo.git/tree/mail-mta/postfix/files/postfix-glibc-2.34.patch?id=846b88fc3d01d2d4e3f47bb328791be36207a767
+Bug: https://marc.info/?t=162754525300004&r=1&w=2
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/postfix/+bug/1939353
+Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1984045
+Bug-Gentoo: https://bugs.gentoo.org/803929
+Reviewed-by: Wietse Venema <wietse () porcupine ! org>
+Last-Update: 2021-09-06
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/util/sys_defs.h
++++ b/src/util/sys_defs.h
+@@ -802,6 +802,9 @@ extern int initgroups(const char *, int)
+ #define _PATH_PROCNET_IFINET6 "/proc/net/if_inet6"
+ #endif
+ #endif
++#if HAVE_GLIBC_API_VERSION_SUPPORT(2, 34)
++#define HAS_CLOSEFROM
++#endif
+ #include <linux/version.h>
+ #if !defined(KERNEL_VERSION)
+ #define KERNEL_VERSION(a,b,c) (LINUX_VERSION_CODE + 1)
