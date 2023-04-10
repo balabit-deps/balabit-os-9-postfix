@@ -14,3 +14,5 @@
 debian-man-name.diff
 71_debianize_collate.pl
 postfix-3.6.2-glibc-234-build-fix.patch
+1995312-unexpected-eof-fix.patch
+1996524-Linux6-support.patch

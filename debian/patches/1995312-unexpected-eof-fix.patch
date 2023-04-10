@@ -1,0 +1,89 @@
+Description: SSL: use of the SSL_OP_IGNORE_UNEXPECTED_EOF option.
+ .
+ A new behaviour was introduced in OpenSSL 1.1.1e, when a peer does not send
+ close_notify before closing the connection.  Previously, it was to return
+ SSL_ERROR_SYSCALL with errno 0, known since at least OpenSSL 0.9.7. 
+ Now it returns SSL_ERROR_SSL with a distinct reason 
+ SSL_R_UNEXPECTED_EOF_WHILE_READING ("unexpected eof while reading").
+ This leads to errors. The behaviour was restored in OpenSSL 1.1.1f,
+ but presents in OpenSSL 3.0 by default.
+ .
+ Use of the SSL_OP_IGNORE_UNEXPECTED_EOF option added in OpenSSL 3.0 allows
+ to set a compatible behaviour to return SSL_ERROR_ZERO_RETURN:
+ https://git.openssl.org/?p=openssl.git;a=commitdiff;h=09b90e0
+ .
+ See for additional details: https://github.com/openssl/openssl/issues/11381
+ .
+ Thanks for this text to Sergey Kandaurov <pluknet@nginx.com>.
+ This patch is a partial cherry-pick of the Origin commit.
+Origin: upstream, https://github.com/vdukhovni/postfix/commit/b30b024aa3e13284d0cd19a14cdbe30ebb9b4e3e
+Bug: https://www.mail-archive.com/postfix-users@postfix.org/msg95796.html
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/postfix/+bug/1995312
+Author: Viktor Dukhovni <https://github.com/vdukhovni>
+Reviewed-By: Miriam España Acebal <miriam.espana@canonical.com>
+Applied-Upstream: 3.6.8, https://github.com/vdukhovni/postfix/commit/b30b024aa3e13284d0cd19a14cdbe30ebb9b4e3e
+Last-Update: 2023-04-10
+---
+
+--- a/src/tls/tls.h
++++ b/src/tls/tls.h
+@@ -367,6 +367,13 @@
+ #define SSL_OP_NO_TLSv1_3	0L	/* Noop */
+ #endif
+ 
++/*
++ * Always used when defined, SMTP has no truncation attacks.
++ */
++#ifndef SSL_OP_IGNORE_UNEXPECTED_EOF
++#define SSL_OP_IGNORE_UNEXPECTED_EOF    0L
++#endif
++
+ #define TLS_KNOWN_PROTOCOLS \
+ 	( TLS_PROTOCOL_SSLv2 | TLS_PROTOCOL_SSLv3 | TLS_PROTOCOL_TLSv1 \
+ 	   | TLS_PROTOCOL_TLSv1_1 | TLS_PROTOCOL_TLSv1_2 | TLS_PROTOCOL_TLSv1_3 )
+@@ -383,7 +390,8 @@
+  * just exposed via hex codes or named elements of tls_ssl_options.
+  */
+ #define TLS_SSL_OP_MANAGED_BITS \
+-	(SSL_OP_CIPHER_SERVER_PREFERENCE | TLS_SSL_OP_PROTOMASK(~0))
++	(SSL_OP_CIPHER_SERVER_PREFERENCE | SSL_OP_IGNORE_UNEXPECTED_EOF | \
++	 TLS_SSL_OP_PROTOMASK(~0))
+ 
+ extern int tls_proto_mask_lims(const char *, int *, int *);
+ 
+--- a/src/tls/tls_client.c
++++ b/src/tls/tls_client.c
+@@ -714,6 +714,15 @@
+     tls_dane_digest_init(client_ctx, fpt_alg);
+ 
+     /*
++     * Presently we use TLS only with SMTP where truncation attacks are not
++     * possible as a result of application framing.  If we ever use TLS in
++     * some other application protocol where truncation could be relevant,
++     * we'd need to disable truncation detection conditionally, or explicitly
++     * clear the option in that code path.
++     */
++    off |= SSL_OP_IGNORE_UNEXPECTED_EOF;
++
++    /*
+      * Protocol selection is destination dependent, so we delay the protocol
+      * selection options to the per-session SSL object.
+      */
+--- a/src/tls/tls_server.c
++++ b/src/tls/tls_server.c
+@@ -462,6 +462,15 @@
+ 	cachable = 0;
+ 
+     /*
++     * Presently we use TLS only with SMTP where truncation attacks are not
++     * possible as a result of application framing.  If we ever use TLS in
++     * some other application protocol where truncation could be relevant,
++     * we'd need to disable truncation detection conditionally, or explicitly
++     * clear the option in that code path.
++     */
++    off |= SSL_OP_IGNORE_UNEXPECTED_EOF;
++
++    /*
+      * Protocol work-arounds, OpenSSL version dependent.
+      */
+     off |= tls_bug_bits();

@@ -1,0 +1,33 @@
+Description: Adding LINUX6 Support
+ LINUX6 support in terms of portability for building postfix.
+ This patch is a partial cherry-pick of the Origin commit.
+Origin: upstream, https://github.com/vdukhovni/postfix/commit/b30b024aa3e13284d0cd19a14cdbe30ebb9b4e3e
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/postfix/+bug/1996524
+Reviewed-By: Miriam España Acebal <miriam.espana@canonical.com>
+Applied-Upstream: 3.6.8, https://github.com/vdukhovni/postfix/commit/b30b024aa3e13284d0cd19a14cdbe30ebb9b4e3e
+Last-Update: 2023-04-10
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/makedefs
++++ b/makedefs
+@@ -575,7 +575,7 @@
+ 		: ${SHLIB_ENV="LD_LIBRARY_PATH=`pwd`/lib"}
+ 		: ${PLUGIN_LD="${CC-gcc} -shared"}
+ 		;;
+- Linux.[345].*)	SYSTYPE=LINUX$RELEASE_MAJOR
++ Linux.[3456].*)	SYSTYPE=LINUX$RELEASE_MAJOR
+ 		case "$CCARGS" in
+ 		 *-DNO_DB*) ;;
+ 		 *-DHAS_DB*) ;;
+--- a/src/util/sys_defs.h
++++ b/src/util/sys_defs.h
+@@ -749,7 +749,8 @@
+  /*
+   * LINUX.
+   */
+-#if defined(LINUX2) || defined(LINUX3) || defined(LINUX4) || defined(LINUX5)
++#if defined(LINUX2) || defined(LINUX3) || defined(LINUX4) || defined(LINUX5) \
++	|| defined(LINUX6)
+ #define SUPPORTED
+ #define UINT32_TYPE	unsigned int
+ #define UINT16_TYPE	unsigned short
