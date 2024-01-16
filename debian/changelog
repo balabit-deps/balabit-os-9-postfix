@@ -1,3 +1,14 @@
+postfix (3.6.4-1ubuntu1.2) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: SMTP smuggling (LP: #2049337)
+    - debian/patches/CVE-2023-51764.patch: introduced
+      `smtpd_forbid_bare_newline`. With "smtpd_forbid_bare_newline = yes",
+       the Postfix SMTP server disconnects a remote SMTP client that
+       sends a line ending in a 'bare newline'.
+    - CVE-2023-51764
+
+ -- Allen Huang <allen.huang@canonical.com>  Tue, 16 Jan 2024 15:11:43 +0000
+
 postfix (3.6.4-1ubuntu1.1) jammy; urgency=medium
 
   * d/p/1995312-unexpected-eof-fix.patch: Workaround for a breaking
