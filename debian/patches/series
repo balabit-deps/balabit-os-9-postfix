@@ -17,3 +17,4 @@ postfix-3.6.2-glibc-234-build-fix.patch
 1995312-unexpected-eof-fix.patch
 1996524-Linux6-support.patch
 CVE-2023-51764.patch
+CVE-2023-51764-2.patch
