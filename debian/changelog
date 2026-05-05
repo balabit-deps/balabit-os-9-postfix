@@ -1,3 +1,13 @@
+postfix (3.6.4-1ubuntu1.4) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: crash via an enhanced status code that lacks text after the
+    third number
+    - debian/patches/CVE-2026-43964.patch: fix buffer over-read when an enhanced
+      status code is not followed by other text in src/global/dsn_util.c.
+    - CVE-2026-43964
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 05 May 2026 11:48:07 -0400
+
 postfix (3.6.4-1ubuntu1.3) jammy-security; urgency=medium
 
   * SECURITY UPDATE: SMTP smuggling (LP: #2049337)

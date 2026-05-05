@@ -18,3 +18,4 @@ postfix-3.6.2-glibc-234-build-fix.patch
 1996524-Linux6-support.patch
 CVE-2023-51764.patch
 CVE-2023-51764-2.patch
+CVE-2026-43964.patch
